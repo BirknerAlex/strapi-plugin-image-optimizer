@@ -1,10 +1,11 @@
 import { ReadStream, createReadStream, createWriteStream } from "fs";
 import { join } from "path";
+
 import sharp, { Sharp, Metadata } from "sharp";
 import { file as fileUtils } from '@strapi/utils';
 
 // @ts-ignore - No types available
-import pluginUpload from "@strapi/plugin-upload/strapi-server";
+import pluginUpload from "@strapi/upload/strapi-server";
 const imageManipulation = pluginUpload().services["image-manipulation"];
 
 import {
@@ -165,7 +166,7 @@ async function writeStreamToFile(sharpsStream: Sharp, path: string) {
     // Reject promise if there is an error with the provided stream
     sharpsStream.on("error", reject);
     sharpsStream.pipe(writeStream);
-    writeStream.on("close", resolve);
+    writeStream.on("close", () => resolve);
     writeStream.on("error", reject);
   });
 }
@@ -192,6 +193,6 @@ function getFileMimeType(sourceFile: File, format: OutputFormat) {
 }
 
 export default () => ({
-  ...imageManipulation(),
+  ...imageManipulation,
   generateResponsiveFormats: optimizeImage,
 });
