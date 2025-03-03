@@ -36,7 +36,6 @@ async function optimizeImage(file: SourceFile): Promise<StrapiImageFormat[]> {
     quality = defaultQuality,
   } = strapi.config.get(`plugin::${pluginId}`) as Config;
 
-
   const sourceFileType = file.ext.replace(".", "");
   if (
     exclude.includes(sourceFileType.toLowerCase() as SourceFormat) ||
@@ -107,7 +106,7 @@ async function resizeFileTo(
   );
 
   const imageHash = `${sizeName}_${format}_${sourceFile.hash}`;
-  const filePath = join(sourceFile.tmpWorkingDirectory, imageHash);
+  const filePath = join(sourceFile.tmpWorkingDirectory, imageHash, );
   const newImageStream = sourceFile.getStream().pipe(sharpInstance);
   await writeStreamToFile(newImageStream, filePath);
 
@@ -170,7 +169,9 @@ async function writeStreamToFile(sharpsStream: Sharp, path: string) {
     // Reject promise if there is an error with the provided stream
     sharpsStream.on("error", reject);
     sharpsStream.pipe(writeStream);
-    writeStream.on("close", () => resolve);
+    writeStream.on('close', () => {
+      resolve(true);
+    });
     writeStream.on("error", reject);
   });
 }
