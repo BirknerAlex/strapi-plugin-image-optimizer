@@ -1,3 +1,5 @@
+import type { Core } from "@strapi/strapi";
+
 import { ReadStream, createReadStream, createWriteStream } from "fs";
 import { join } from "path";
 
@@ -7,6 +9,8 @@ import { file as fileUtils } from '@strapi/utils';
 // @ts-ignore - No types available
 import pluginUpload from "@strapi/upload/strapi-server";
 const imageManipulation = pluginUpload().services["image-manipulation"];
+import pluginId from "../utils/pluginId";
+import { Config } from "../models";
 
 import {
   OutputFormat,
@@ -16,7 +20,6 @@ import {
   StrapiImageFormat,
   SourceFormat,
 } from "../models";
-import settingsService from "./settings-service";
 
 const defaultFormats: OutputFormat[] = ["original", "webp", "avif"];
 const defaultInclude: SourceFormat[] = ["jpeg", "jpg", "png"];
@@ -31,7 +34,8 @@ async function optimizeImage(file: SourceFile): Promise<StrapiImageFormat[]> {
     sizes,
     additionalResolutions,
     quality = defaultQuality,
-  } = settingsService.settings;
+  } = strapi.config.get(`plugin::${pluginId}`) as Config;
+
 
   const sourceFileType = file.ext.replace(".", "");
   if (
@@ -192,7 +196,9 @@ function getFileMimeType(sourceFile: File, format: OutputFormat) {
   return format === "original" ? sourceFile.mime : `image/${format}`;
 }
 
-export default () => ({
+const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   ...imageManipulation,
   generateResponsiveFormats: optimizeImage,
 });
+
+export default service;
