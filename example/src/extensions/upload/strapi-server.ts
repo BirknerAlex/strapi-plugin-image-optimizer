@@ -1,7 +1,7 @@
-import imageOptimizerService from "strapi-plugin-image-optimizer/dist/server/services/image-optimizer-service";
+import imageOptimizerPlugin from "strapi-plugin-image-optimizer/strapi-server";
 import { LoadedPlugin } from "@strapi/types/dist/plugin";
 
 module.exports = (plugin: LoadedPlugin) => {
-  plugin.services["image-manipulation"] = imageOptimizerService;
+  plugin.services["image-manipulation"] = imageOptimizerPlugin.services.imageOptimizerService;
   return plugin;
 };
