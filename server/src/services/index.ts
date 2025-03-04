@@ -1,7 +1,5 @@
-import config from "./config";
-import imageOptimizerService from "./image-optimizer-service";
+import service from "./service";
 
 export default {
-  config,
-  imageOptimizerService,
+  service,
 };
