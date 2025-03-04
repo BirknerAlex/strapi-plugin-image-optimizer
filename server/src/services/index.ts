@@ -1,5 +1,7 @@
-import service from "./service";
+import service, { type ImageManipulationService } from "./service";
+
+export type { ImageManipulationService };
 
 export default {
-  service,
+  ImageManipulationService: service as ImageManipulationService,
 };
