@@ -202,4 +202,6 @@ const service = ({ strapi }: { strapi: Core.Strapi }) => ({
   generateResponsiveFormats: optimizeImage,
 });
 
+export type ImageManipulationService = ReturnType<typeof service>;
+
 export default service;

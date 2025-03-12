@@ -54,7 +54,7 @@ To make this plugin work, you need to enter the following code to `./src/extensi
 import imageOptimizerPlugin from "strapi-plugin-image-optimizer/strapi-server";
 
 module.exports = (plugin) => {
-  plugin.services["image-manipulation"] = imageOptimizerPlugin.services.imageOptimizerService;
+  plugin.services["image-manipulation"] = imageOptimizerPlugin.services.service;
   return plugin;
 };
 ```

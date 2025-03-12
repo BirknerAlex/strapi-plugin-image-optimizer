@@ -1,7 +1,7 @@
-import config from "./config";
-import imageOptimizerService from "./image-optimizer-service";
+import service, { type ImageManipulationService } from "./service";
+
+export type { ImageManipulationService };
 
 export default {
-  config,
-  imageOptimizerService,
+  ImageManipulationService: service as ImageManipulationService,
 };
