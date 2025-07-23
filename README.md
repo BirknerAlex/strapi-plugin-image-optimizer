@@ -10,26 +10,29 @@
 
 ## Table of contents
 
-- [Requirements](#requirements)
-- [Installation](#installation)
-  - [1. Install package](#1-install-package)
-  - [2. Extend Strapi's upload plugin](#2-extend-strapis-upload-plugin)
-  - [3. Add config options](#3-add-config-options)
-- [Config options](#config-options)
-  - [Object `Config`](#object-config)
-  - [Object `ImageSize`](#object-imagesize)
-  - [Type `SourceFormat`](#type-sourceformat)
-  - [Type `OutputFormat`](#type-outputformat)
-  - [Type `ImageFit`](#type-imagefit)
-  - [Type `ImagePosition`](#type-imageposition)
-  - [Example config](#example-config)
-- [Usage](#usage)
-- [Found a bug?](#found-a-bug)
-- [Contributors](#contributors-)
+- [Strapi plugin image optimizer](#strapi-plugin-image-optimizer)
+  - [Table of contents](#table-of-contents)
+  - [Requirements](#requirements)
+  - [Note](#note)
+  - [Installation](#installation)
+    - [1. Install package](#1-install-package)
+    - [2. Extend Strapi's upload plugin](#2-extend-strapis-upload-plugin)
+    - [3. Add config options](#3-add-config-options)
+  - [Config options](#config-options)
+    - [Object `Config`](#object-config)
+    - [Object `ImageSize`](#object-imagesize)
+    - [Type `SourceFormat`](#type-sourceformat)
+    - [Type `OutputFormat`](#type-outputformat)
+    - [Type `ImageFit`](#type-imagefit)
+    - [Type `ImagePosition`](#type-imageposition)
+    - [Example config](#example-config)
+  - [Usage](#usage)
+  - [Found a bug?](#found-a-bug)
+  - [Contributors ✨](#contributors-)
 
 ## Requirements
 
-Strapi version >= v4.11.7
+Strapi version >= v5.18.0
 
 ## Note
 
@@ -45,13 +48,13 @@ Install the package via `npm install strapi-plugin-image-optimizer` or `yarn add
 
 To make this plugin work, you need to enter the following code to `./src/extensions/upload/strapi-server.ts`. If file and folders do not exist, you need to create them. This code overrides the default image manipulation service of Strapi's `upload` plugin.
 
-```typescript
-// ./src/extensions/upload/strapi-server.ts
+```javascript
+// ./src/extensions/upload/strapi-server.(js|ts)
 
-import imageOptimizerService from "strapi-plugin-image-optimizer/dist/server/services/image-optimizer-service";
+import imageOptimizerPlugin from "strapi-plugin-image-optimizer/strapi-server";
 
 module.exports = (plugin) => {
-  plugin.services["image-manipulation"] = imageOptimizerService;
+  plugin.services["image-manipulation"] = imageOptimizerPlugin.services.service;
   return plugin;
 };
 ```

@@ -1,9 +1,16 @@
+import type { Core } from "@strapi/strapi";
+
 import { ReadStream, createReadStream, createWriteStream } from "fs";
 import { join } from "path";
-import sharp, { Sharp, Metadata } from "sharp";
 
-import { bytesToKbytes } from "@strapi/utils/dist/file";
-import imageManipulation from "@strapi/plugin-upload/server/services/image-manipulation";
+import sharp, { Sharp, Metadata } from "sharp";
+import { file as fileUtils } from '@strapi/utils';
+
+// @ts-ignore - No types available
+import pluginUpload from "@strapi/upload/strapi-server";
+const imageManipulation = pluginUpload().services["image-manipulation"];
+import pluginId from "../utils/pluginId";
+import { Config } from "../models";
 
 import {
   OutputFormat,
@@ -13,7 +20,6 @@ import {
   StrapiImageFormat,
   SourceFormat,
 } from "../models";
-import settingsService from "./settings-service";
 
 const defaultFormats: OutputFormat[] = ["original", "webp", "avif"];
 const defaultInclude: SourceFormat[] = ["jpeg", "jpg", "png"];
@@ -28,7 +34,7 @@ async function optimizeImage(file: SourceFile): Promise<StrapiImageFormat[]> {
     sizes,
     additionalResolutions,
     quality = defaultQuality,
-  } = settingsService.settings;
+  } = strapi.config.get(`plugin::${pluginId}`) as Config;
 
   const sourceFileType = file.ext.replace(".", "");
   if (
@@ -100,7 +106,7 @@ async function resizeFileTo(
   );
 
   const imageHash = `${sizeName}_${format}_${sourceFile.hash}`;
-  const filePath = join(sourceFile.tmpWorkingDirectory, imageHash);
+  const filePath = join(sourceFile.tmpWorkingDirectory, imageHash, );
   const newImageStream = sourceFile.getStream().pipe(sharpInstance);
   await writeStreamToFile(newImageStream, filePath);
 
@@ -113,7 +119,7 @@ async function resizeFileTo(
     path: sourceFile.path,
     width: metadata.width,
     height: metadata.height,
-    size: metadata.size && bytesToKbytes(metadata.size),
+    size: metadata.size && fileUtils.bytesToKbytes(metadata.size),
     getStream: () => createReadStream(filePath),
   };
 }
@@ -163,7 +169,9 @@ async function writeStreamToFile(sharpsStream: Sharp, path: string) {
     // Reject promise if there is an error with the provided stream
     sharpsStream.on("error", reject);
     sharpsStream.pipe(writeStream);
-    writeStream.on("close", resolve);
+    writeStream.on('close', () => {
+      resolve(true);
+    });
     writeStream.on("error", reject);
   });
 }
@@ -189,7 +197,11 @@ function getFileMimeType(sourceFile: File, format: OutputFormat) {
   return format === "original" ? sourceFile.mime : `image/${format}`;
 }
 
-export default () => ({
-  ...imageManipulation(),
+const service = ({ strapi }: { strapi: Core.Strapi }) => ({
+  ...imageManipulation,
   generateResponsiveFormats: optimizeImage,
 });
+
+export type ImageManipulationService = ReturnType<typeof service>;
+
+export default service;
