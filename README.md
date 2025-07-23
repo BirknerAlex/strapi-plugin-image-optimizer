@@ -32,7 +32,7 @@
 
 ## Requirements
 
-Strapi version >= v5.10.0
+Strapi version >= v5.18.0
 
 ## Note
 
